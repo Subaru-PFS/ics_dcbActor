@@ -44,7 +44,7 @@ def main():
                         help='identity')
     args = parser.parse_args()
 
-    theActor = DcbActor('dcb',
+    theActor = DcbActor(args.name,
                         productName='dcbActor',
                         configFile=args.config,
                         logLevel=args.logLevel)

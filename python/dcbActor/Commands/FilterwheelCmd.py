@@ -25,8 +25,8 @@ class FilterwheelCmd(object):
 
         # Define typed command arguments for the above commands.
         self.keys = keys.KeysDictionary("dcb__filterwheel", (1, 1),
-                                        keys.Key('linewheel', types.Int(), help='line wheel position (1-5)'),
-                                        keys.Key('qthwheel', types.Int(), help='qth wheel position (1-5)'),
+                                        keys.Key('linewheel', types.Float(), help='line wheel position (1-5)'),
+                                        keys.Key('qthwheel', types.Float(), help='qth wheel position (1-5)'),
                                         )
 
     @property
@@ -45,12 +45,21 @@ class FilterwheelCmd(object):
     def moveWheel(self, cmd):
         """set linewheel to required position."""
         cmdKeys = cmd.cmd.keywords
-        wheel = 'linewheel' if 'linewheel' in cmdKeys else 'qthwheel'
-        position = cmdKeys[wheel].values[0]
+        if 'linewheel' in cmdKeys:
+            wheel = 'linewheel'
+            holeDict = self.controller.lineHoles
+        else:
+            wheel = 'qthwheel'
+            holeDict = self.controller.qthHoles
 
-        if not 1 <= position <= 5:
-            raise ValueError('Wheel positions are within 1-5')
+        hole = cmdKeys[wheel].values[0]
+        revHoleDict = dict([(v,k) for k,v in holeDict.items()])
 
+        if hole not in revHoleDict.keys():
+            possibleHoles = ",".join([str(key) for key in revHoleDict.keys()])
+            raise ValueError(f'unknown hole:{hole}, existing are {possibleHoles}')
+
+        position = revHoleDict[hole]
         self.controller.moving(wheel=wheel, position=position, cmd=cmd)
         self.controller.generate(cmd)
 

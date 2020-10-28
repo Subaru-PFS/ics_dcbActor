@@ -40,6 +40,16 @@ class filterwheel(FSMThread, bufferedSocket.EthComm):
         else:
             raise ValueError('unknown mode')
 
+    @property
+    def lineHoles(self):
+        return dict(
+            [(i + 1, float(h)) for i, h in enumerate(self.actor.config.get('filterwheel', 'lineHoles').split(','))])
+
+    @property
+    def qthHoles(self):
+        return dict(
+            [(i + 1, float(h)) for i, h in enumerate(self.actor.config.get('filterwheel', 'qthHoles').split(','))])
+
     def _loadCfg(self, cmd, mode=None):
         """Load filterwheel configuration.
 
@@ -88,20 +98,24 @@ class filterwheel(FSMThread, bufferedSocket.EthComm):
         adc2 = self.sendOneCommand('adc 2', cmd=cmd)
 
         try:
-            linewheel, = self.actor.instData.loadKey('linewheel')
+            lineWheel, = self.actor.instData.loadKey('linewheel')
+            lineHole = self.lineHoles[lineWheel]
         except:
-            #a bit of flexibility, to be removed later
-            linewheel = -1
+            # a bit of flexibility, to be removed later
+            lineWheel = -1
+            lineHole = 'unknown'
 
         try:
-            qthwheel, = self.actor.instData.loadKey('qthwheel')
+            qthWheel, = self.actor.instData.loadKey('qthwheel')
+            qthHole = self.qthHoles[qthWheel]
         except:
-            #a bit of flexibility, to be removed later
-            qthwheel = -1
+            # a bit of flexibility, to be removed later
+            qthWheel = -1
+            qthHole = 'unknown'
 
         cmd.inform(f'adc={adc1},{adc2}')
-        cmd.inform(f'linewheel={linewheel}')
-        cmd.inform(f'qthwheel={qthwheel}')
+        cmd.inform(f'linewheel={lineWheel},{lineHole}')
+        cmd.inform(f'qthwheel={qthWheel},{qthHole}')
 
     def moving(self, cmd, wheel, position):
         """Move required wheel to required position
