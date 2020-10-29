@@ -43,12 +43,12 @@ class filterwheel(FSMThread, bufferedSocket.EthComm):
     @property
     def lineHoles(self):
         return dict(
-            [(i + 1, float(h)) for i, h in enumerate(self.actor.config.get('filterwheel', 'lineHoles').split(','))])
+            [(i + 1, h.strip()) for i, h in enumerate(self.actor.config.get('filterwheel', 'lineHoles').split(','))])
 
     @property
     def qthHoles(self):
         return dict(
-            [(i + 1, float(h)) for i, h in enumerate(self.actor.config.get('filterwheel', 'qthHoles').split(','))])
+            [(i + 1, h.strip()) for i, h in enumerate(self.actor.config.get('filterwheel', 'qthHoles').split(','))])
 
     def _loadCfg(self, cmd, mode=None):
         """Load filterwheel configuration.

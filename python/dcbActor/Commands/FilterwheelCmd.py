@@ -25,8 +25,8 @@ class FilterwheelCmd(object):
 
         # Define typed command arguments for the above commands.
         self.keys = keys.KeysDictionary("dcb__filterwheel", (1, 1),
-                                        keys.Key('linewheel', types.Float(), help='line wheel position (1-5)'),
-                                        keys.Key('qthwheel', types.Float(), help='qth wheel position (1-5)'),
+                                        keys.Key('linewheel', types.String(), help='line wheel position (1-5)'),
+                                        keys.Key('qthwheel', types.String(), help='qth wheel position (1-5)'),
                                         )
 
     @property
@@ -53,6 +53,7 @@ class FilterwheelCmd(object):
             holeDict = self.controller.qthHoles
 
         hole = cmdKeys[wheel].values[0]
+        hole = '{:.1f}'.format(float(hole)) if hole !='none' else hole
         revHoleDict = dict([(v,k) for k,v in holeDict.items()])
 
         if hole not in revHoleDict.keys():
